@@ -1,32 +1,44 @@
-// backend/index.js
 import express from "express";
 import mongoose from "mongoose";
+import dotenv from "dotenv";
+import cors from "cors";
+import path from "path";
+import { fileURLToPath } from "url";
+
 import { PORT, mongodbURL } from "./config.js";
 import bookRoutes from "./routes/bookRoutes.js";
-import cors from "cors";
+
+dotenv.config(); // Load environment variables
 
 const app = express();
+
+// Middleware
 app.use(express.json());
-app.use(cors()); // Allow all origins
+app.use(cors());
 
-// Test route
-app.get("/", (req, res) => {
-  console.log("Received request on /");
-  return res.status(200).send("Welcome to MERN stack app");
-});
-
-// Book routes
+// API routes
 app.use("/books", bookRoutes);
 
-// Connect to MongoDB and start server
+// Serve frontend build (Vite or React)
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Serve static files from dist (React/Vite frontend)
+app.use(express.static(path.join(__dirname, "../frontend/dist")));
+
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "../frontend/dist/index.html"));
+});
+
 mongoose
-  .connect(mongodbURL)
+  .connect(mongodbURL, { dbName: "bookstoreDB" }) 
   .then(() => {
-    console.log("MongoDB connected successfully");
+    console.log("✅ MongoDB connected successfully");
+    console.log("👉 Connected to DB:", mongoose.connection.name); 
     app.listen(PORT, () => {
-      console.log(`Server running on port ${PORT}`);
+      console.log(`🚀 Server running on port ${PORT}`);
     });
   })
   .catch((error) => {
-    console.error("MongoDB connection error:", error.message);
+    console.error("❌ MongoDB connection error:", error.message);
   });

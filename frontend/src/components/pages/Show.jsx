@@ -3,12 +3,14 @@ import axios from 'axios';
 import { useParams } from 'react-router-dom';
 import BackButton from '../BackButton';
 import Spinner from '../Spinner';
+import { useSnackbar } from 'notistack'; // ✅ Add this
 
 const Show = () => {
   const [book, setBook] = useState(null);
   const [loading, setLoading] = useState(true);
   const [errorMsg, setErrorMsg] = useState('');
   const { id } = useParams();
+  const { enqueueSnackbar } = useSnackbar(); // ✅ Add this
 
   useEffect(() => {
     if (!id) {
@@ -18,16 +20,17 @@ const Show = () => {
     }
 
     axios
-      .get(`http://localhost:3000/books/${id}`)
+      .get(`${import.meta.env.VITE_API_BASE_URL}/books/${id}`)
       .then((res) => {
-        console.log("Fetched book:", res.data);
         setBook(res.data);
         setLoading(false);
+        enqueueSnackbar('Book details fetched successfully!', { variant: 'success' }); // ✅ Snackbar here
       })
       .catch((err) => {
         console.error('Error fetching book:', err);
         setErrorMsg('Failed to load book details.');
         setLoading(false);
+        enqueueSnackbar('Failed to load book details.', { variant: 'error' }); // ✅ Optional: error notification
       });
   }, [id]);
 

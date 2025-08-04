@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 import BackButton from '../BackButton';
 import Spinner from '../Spinner';
-import { useSnackbar }  from 'notistack';
-
+import { useSnackbar } from 'notistack';
 import axios from 'axios';
 import { useNavigate, useParams } from 'react-router-dom';
 
@@ -11,21 +10,21 @@ const Deletebook = () => {
   const navigate = useNavigate();
   const { id } = useParams();
   const { enqueueSnackbar } = useSnackbar();
+  const baseURL = import.meta.env.VITE_API_BASE_URL;
 
   const handleDeleteBook = () => {
     setLoading(true);
     axios
-      .delete(`http://localhost:3000/books/${id}`)
+      .delete(`${baseURL}/books/${id}`)
       .then(() => {
         setLoading(false);
         navigate('/');
-        enqueueSnackbar('Book deleted successfully!', { variant: 'success'})
+        enqueueSnackbar('Book deleted successfully!', { variant: 'success' });
       })
       .catch((error) => {
         setLoading(false);
         console.error('Error deleting book:', error);
-        alert('Failed to delete the book. Please try again.');
-        enqueueSnackbar('failed to delete book, please try agin later.',{variant: 'error'})
+        enqueueSnackbar('Failed to delete book. Please try again later.', { variant: 'error' });
       });
   };
 

@@ -14,32 +14,33 @@ const Editbook = () => {
   const { id } = useParams();
   const { enqueueSnackbar } = useSnackbar();
 
+  const baseURL = import.meta.env.VITE_API_BASE_URL;
+
   useEffect(() => {
     setLoading(true);
-    axios.get(`http://localhost:3000/books/${id}`)
+    axios.get(`${baseURL}/books/${id}`)
       .then((response) => {
         setTitle(response.data.title);
         setAuthor(response.data.author);
         setPublishYear(response.data.publishYear);
         setLoading(false);
-        enqueueSnackbar('Book details fetched successfully!', { variant: 'success' });
+        // Removed the unnecessary fetch success notification
       })
       .catch(error => {
         console.error("Error fetching book details:", error);
         setLoading(false);
         enqueueSnackbar('Failed to fetch book details. Please try again later.', { variant: 'error' });
       });
-  }, [id]);
+  }, [id, baseURL]);
 
   const handleEditBook = () => {
     const data = { title, author, publishYear };
     setLoading(true);
 
-    axios.put(`http://localhost:3000/books/${id}`, data)
+    axios.put(`${baseURL}/books/${id}`, data)
       .then(() => {
         setLoading(false);
-        // ✅ Send message to home page
-        navigate('/', { state: { message: 'Book edited successfully!' } });
+        navigate('/', { state: { message: 'Book edited successfully!' } }); // Single success message
       })
       .catch((error) => {
         setLoading(false);

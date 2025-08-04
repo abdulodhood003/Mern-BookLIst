@@ -23,7 +23,8 @@ const Home = () => {
 
   useEffect(() => {
     setLoading(true);
-    axios.get('http://localhost:3000/books')
+    axios
+      .get(`${import.meta.env.VITE_API_BASE_URL}/books`)
       .then((response) => {
         setBooks(response.data.data);
         setLoading(false);

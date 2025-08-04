@@ -3,7 +3,7 @@ import BackButton from '../BackButton';
 import Spinner from '../Spinner';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
- import {useSnackbar} from 'notistack';
+import { useSnackbar } from 'notistack';
 
 const Createbook = () => {
   const [title, setTitle] = useState('');
@@ -12,28 +12,27 @@ const Createbook = () => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const { enqueueSnackbar } = useSnackbar();
-  
+  const baseURL = import.meta.env.VITE_API_BASE_URL;
 
   const handleSaveBook = () => {
     if (!title || !author || !publishYear) {
-      alert('Please fill in all fields');
+      enqueueSnackbar('Please fill in all fields.', { variant: 'warning' });
       return;
     }
 
     const data = { title, author, publishYear };
     setLoading(true);
 
-    axios.post('http://localhost:3000/books', data)
+    axios.post(`${baseURL}/books`, data)
       .then(() => {
         setLoading(false);
-        enqueueSnackbar('Book created successfully!', { variant: 'success '})
+        enqueueSnackbar('Book created successfully!', { variant: 'success' });
         navigate('/');
       })
       .catch((error) => {
         setLoading(false);
         console.error('Error creating book:', error);
-        alert("Failed to create a book. Please try again later.");
-        enqueueSnackbar('Failed to create book, please try again later.',{variant: 'error'})
+        enqueueSnackbar('Failed to create book, please try again later.', { variant: 'error' });
       });
   };
 
